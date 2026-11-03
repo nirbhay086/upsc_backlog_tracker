@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101827">
+<meta name="description" content="Daily offline UPSC backlog planner">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="app-icon.png" type="image/png">
+<title>UPSC Daily Backlog Planner</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121d2e;--panel2:#19263a;--text:#edf3fb;--muted:#9aabc1;--gold:#e5ad55;--blue:#68a9ef;--green:#36c28a;--line:#29384e;--red:#f17878}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#101b2d,#090f1b 60%);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:env(safe-area-inset-top) 13px env(safe-area-inset-bottom)}
+main{max-width:900px;margin:auto;padding:16px 0 38px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}.brand-wrap{display:flex;align-items:center;gap:10px;min-width:0}.brand-logo{width:48px;height:58px;object-fit:contain;background:#fff;border-radius:7px;padding:2px;flex-shrink:0}.brand{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}.title{font-size:23px;font-weight:850;margin:2px 0}.offline{font-size:10px;border:1px solid #2b6e57;color:#7ce0b4;border-radius:99px;padding:6px 8px;white-space:nowrap}
+.panel{background:rgba(18,29,46,.97);border:1px solid var(--line);border-radius:17px;padding:15px;margin:12px 0;box-shadow:0 10px 28px #0002}.hero{background:linear-gradient(135deg,#1b2b42,#142238)}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.big{font-size:32px;font-weight:850;line-height:1.1}.muted,.small{color:var(--muted)}.small{font-size:12px}.progress{height:9px;background:#26354a;border-radius:99px;overflow:hidden;margin:10px 0 5px}.fill{height:100%;width:0;background:linear-gradient(90deg,#36c28a,#8be0ae);border-radius:99px;transition:width .2s}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{background:var(--panel2);border-radius:12px;padding:10px}.stat strong{display:block;font-size:20px}.stat span{font-size:11px;color:var(--muted)}
+h2{font-size:18px;margin:0 0 10px}.daily-title{font-size:21px;font-weight:800}.day-picker{display:flex;gap:8px;align-items:center;margin:12px 0}.day-picker select{flex:1;min-width:0;background:#0d1726;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:10px;font-size:14px}
+button{border:0;border-radius:10px;background:#2a3c55;color:var(--text);padding:10px 12px;font-weight:700;font-size:13px;cursor:pointer}button.primary{background:#277c5d}button:disabled{opacity:.35;cursor:not-allowed}.nav{display:flex;gap:7px}.target-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin:12px 0}.target{background:#0f1a2a;border:1px solid #2b3b52;border-radius:13px;padding:12px}.target .subject{font-size:12px;color:var(--muted)}.target strong{display:block;font-size:23px;margin:2px 0}.mh{color:var(--gold)}.pol{color:var(--blue)}.task-list{display:grid;gap:8px;margin-top:12px}.task{display:flex;align-items:center;gap:10px;background:#0f1a2a;border:1px solid #26364b;border-radius:11px;padding:11px}.task input{width:21px;height:21px;accent-color:var(--green);flex-shrink:0}.task label{flex:1;display:flex;justify-content:space-between;gap:8px;align-items:center}.task.done label .task-name{text-decoration:line-through;color:#8494a8}.task-name{font-weight:700}.duration{font-size:11px;color:var(--muted);white-space:nowrap}
+.week-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.week{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:9px 7px;text-align:center}.week b{display:block;font-size:12px}.week span{display:block;font-size:11px;color:var(--muted);margin-top:3px}.week.active{border-color:var(--green);background:#17352f}.week.complete{border-color:#36765e}.note{font-size:12px;line-height:1.5;color:var(--muted)}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.danger{background:#60333a}.status{font-size:12px;color:var(--muted);margin-top:9px}
+@media(min-width:680px){.two-col{display:grid;grid-template-columns:1.1fr .9fr;gap:12px}.two-col .panel{margin:12px 0}.week-grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+</head>
+<body><main>
+<header class="top">
+ <div class="brand-wrap"><img class="brand-logo" src="logo.png" alt="UPSC emblem"><div><div class="brand">UPSC CSE · Daily targets</div><div class="title">Backlog Planner</div></div></div>
+ <div class="offline" id="network">● Offline-ready</div>
+</header>
+
+<section class="panel hero">
+ <div class="row"><div><div class="small">OVERALL BACKLOG</div><div class="big" id="overallPct">0%</div></div><div style="text-align:right"><div class="big" id="overallCount">0/113</div><div class="small">lectures complete</div></div></div>
+ <div class="progress"><div class="fill" id="overallBar"></div></div>
+ <div class="stats">
+  <div class="stat"><span>Completed</span><strong id="hoursDone">0h</strong></div>
+  <div class="stat"><span>Remaining</span><strong id="hoursLeft">226h</strong></div>
+  <div class="stat"><span>Plan length</span><strong>46 days</strong></div>
+ </div>
+</section>
+
+<div class="two-col">
+ <section class="panel">
+  <div class="row"><div><div class="small">YOUR CURRENT TARGET</div><div class="daily-title" id="dayHeading">Day 1 · Week 1</div></div><span class="small" id="dayLoad">4 hours</span></div>
+  <div class="day-picker">
+   <select id="daySelect" aria-label="Choose study day"></select>
+   <div class="nav"><button id="prevDay">‹</button><button id="nextDay">›</button></div>
+  </div>
+  <div class="target-grid">
+   <div class="target"><div class="subject mh">MODERN HISTORY</div><strong id="mhTarget">1 lecture</strong><div class="small" id="mhRange">Lecture 1</div></div>
+   <div class="target"><div class="subject pol">INDIAN POLITY</div><strong id="polTarget">1 lecture</strong><div class="small" id="polRange">Lecture 1</div></div>
+  </div>
+  <div class="row"><strong>Today's checklist</strong><span class="small" id="dayProgress">0/2 completed</span></div>
+  <div class="progress"><div class="fill" id="dayBar"></div></div>
+  <div class="task-list" id="taskList"></div>
+  <div class="row" style="margin-top:12px"><span class="note" id="dayMessage">Tick each lecture after watching it.</span><button class="primary" id="nextIncomplete">Next day →</button></div>
+ </section>
+
+ <section class="panel">
+  <h2>8-week roadmap</h2>
+  <div class="week-grid" id="weeks"></div>
+  <p class="note">Study six days each week. Keep the seventh day for revision, MCQs and catching up. The 46 study-day plan spreads the 113 lectures into manageable daily targets.</p>
+  <div class="stats">
+   <div class="stat"><span>4-hour days</span><strong id="fourDays">25</strong></div>
+   <div class="stat"><span>6-hour days</span><strong id="sixDays">21</strong></div>
+   <div class="stat"><span>Live classes</span><strong>4h/day</strong></div>
+  </div>
+ </section>
+</div>
+
+<section class="panel">
+ <h2>Daily target calendar</h2>
+ <p class="note">Each row is one study day. Select any day to open its lecture checklist. The 4-hour live classes are separate from these backlog targets.</p>
+ <div id="calendar" class="task-list"></div>
+</section>
+
+<section class="panel">
+ <h2>Backup & settings</h2>
+ <p class="note">Progress is saved on this device in your browser. Export a backup regularly; clearing browser data can erase it.</p>
+ <div class="actions">
+  <button class="primary" id="exportBtn">Export backup</button>
+  <button id="importBtn">Import backup</button><input id="importFile" type="file" accept="application/json" hidden>
+  <button class="danger" id="resetBtn">Reset progress</button>
+ </div>
+ <div class="status" id="saveStatus">Autosave enabled.</div>
+</section>
+<p class="note" style="text-align:center">Target workload: 4–6 hours of backlog + 4 hours of live classes on study days. Weekly revision day is reserved separately.</p>
+</main>
+<script>
+const KEY='upscDailyBacklog_v2';
+const TOTAL={mh:51,pol:62};
+let state={mh:{},pol:{},selectedDay:1};
+function buildPlan(){
+ const plan=[];let mhNo=1,polNo=1;
+ for(let d=0;d<46;d++){
+  const mhExtra=(Math.round((d+1)*5/46)>Math.round(d*5/46))?1:0;
+  const polExtra=(Math.round((d+1)*16/46)>Math.round(d*16/46))?1:0;
+  const mhCount=1+mhExtra,polCount=1+polExtra;
+  const mhIds=Array.from({length:mhCount},()=>mhNo++);
+  const polIds=Array.from({length:polCount},()=>polNo++);
+  plan.push({day:d+1,week:Math.floor(d/6)+1,mh:mhIds,pol:polIds,hours:(mhCount+polCount)*2});
+ }
+ return plan;
+}
+const PLAN=buildPlan();
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'{}');state.mh=x.mh||{};state.pol=x.pol||{};state.selectedDay=Math.min(46,Math.max(1,Number(x.selectedDay)||1));}catch(e){state={mh:{},pol:{},selectedDay:1};}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state));document.getElementById('saveStatus').textContent='Saved on this device · '+new Date().toLocaleTimeString();}
+function isDone(s,n){return !!state[s][n];}
+function mark(s,n,v){state[s][n]=v;save();render();}
+function totalDone(s){return Object.values(state[s]).filter(Boolean).length;}
+function dayDone(p){return [...p.mh.map(n=>isDone('mh',n)),...p.pol.map(n=>isDone('pol',n))].filter(Boolean).length;}
+function renderDayOptions(){
+ const sel=document.getElementById('daySelect');sel.innerHTML='';
+ PLAN.forEach(p=>{const o=document.createElement('option');o.value=p.day;o.textContent=`Day ${p.day} · Week ${p.week} · ${p.hours}h`;sel.append(o);});
+ sel.value=state.selectedDay;
+}
+function selectDay(n){state.selectedDay=Math.min(46,Math.max(1,n));save();render();}
+function renderDay(){
+ const p=PLAN[state.selectedDay-1];document.getElementById('daySelect').value=p.day;
+ document.getElementById('dayHeading').textContent=`Day ${p.day} · Week ${p.week}`;
+ document.getElementById('dayLoad').textContent=`${p.hours} hours backlog`;
+ document.getElementById('mhTarget').textContent=`${p.mh.length} lecture${p.mh.length>1?'s':''}`;
+ document.getElementById('polTarget').textContent=`${p.pol.length} lecture${p.pol.length>1?'s':''}`;
+ document.getElementById('mhRange').textContent=p.mh.map(n=>'#'+n).join(', ')||'No target';
+ document.getElementById('polRange').textContent=p.pol.map(n=>'#'+n).join(', ')||'No target';
+ const tasks=[...p.mh.map(n=>({s:'mh',n,name:`Modern History · Lecture ${n}`})),...p.pol.map(n=>({s:'pol',n,name:`Indian Polity · Lecture ${n}`}))];
+ const done=dayDone(p);document.getElementById('dayProgress').textContent=`${done}/${tasks.length} completed`;
+ document.getElementById('dayBar').style.width=(done/tasks.length*100)+'%';
+ document.getElementById('dayMessage').textContent=done===tasks.length?'Daily target completed. Great work!':'Tick each lecture after watching it.';
+ const list=document.getElementById('taskList');list.innerHTML='';
+ tasks.forEach(t=>{
+  const row=document.createElement('div');row.className='task'+(isDone(t.s,t.n)?' done':'');
+  const cb=document.createElement('input');cb.type='checkbox';cb.checked=isDone(t.s,t.n);cb.id=t.s+'-'+t.n;
+  cb.addEventListener('change',()=>mark(t.s,t.n,cb.checked));
+  const label=document.createElement('label');label.htmlFor=cb.id;
+  const name=document.createElement('span');name.className='task-name';name.textContent=t.name;
+  const time=document.createElement('span');time.className='duration';time.textContent='2 hours';
+  label.append(name,time);row.append(cb,label);list.append(row);
+ });
+ document.getElementById('prevDay').disabled=p.day===1;
+ document.getElementById('nextDay').disabled=p.day===46;
+}
+function renderSummary(){
+ const mh=totalDone('mh'),pol=totalDone('pol'),done=mh+pol,pct=Math.round(done/113*100);
+ document.getElementById('overallPct').textContent=pct+'%';document.getElementById('overallCount').textContent=done+'/113';
+ document.getElementById('overallBar').style.width=pct+'%';document.getElementById('hoursDone').textContent=(done*2)+'h';document.getElementById('hoursLeft').textContent=((113-done)*2)+'h';
+}
+function renderWeeks(){
+ const el=document.getElementById('weeks');el.innerHTML='';
+ for(let w=1;w<=8;w++){
+  const days=PLAN.filter(p=>p.week===w);let done=0,total=0;
+  days.forEach(p=>{done+=dayDone(p);total+=p.mh.length+p.pol.length;});
+  const div=document.createElement('div');div.className='week'+(PLAN[state.selectedDay-1].week===w?' active':'')+(done===total?' complete':'');
+  div.innerHTML=`<b>Week ${w}</b><span>${done}/${total} lectures</span>`;el.append(div);
+ }
+}
+function renderCalendar(){
+ const cal=document.getElementById('calendar');cal.innerHTML='';
+ PLAN.forEach(p=>{
+  const done=dayDone(p),total=p.mh.length+p.pol.length;
+  const b=document.createElement('button');b.style.textAlign='left';b.style.display='flex';b.style.justifyContent='space-between';b.style.alignItems='center';b.style.gap='8px';b.style.width='100%';
+  b.style.background=p.day===state.selectedDay?'#20543f':'#0f1a2a';b.style.border='1px solid #29384e';
+  const left=document.createElement('span');left.textContent=`Day ${p.day} · Week ${p.week}  —  MH ${p.mh.length}, Polity ${p.pol.length}`;
+  const right=document.createElement('span');right.className='small';right.textContent=`${done}/${total} · ${p.hours}h`;
+  b.append(left,right);b.addEventListener('click',()=>{selectDay(p.day);window.scrollTo({top:0,behavior:'smooth'});});cal.append(b);
+ });
+}
+function render(){renderDay();renderSummary();renderWeeks();renderCalendar();}
+document.getElementById('daySelect').addEventListener('change',e=>selectDay(Number(e.target.value)));
+document.getElementById('prevDay').addEventListener('click',()=>selectDay(state.selectedDay-1));
+document.getElementById('nextDay').addEventListener('click',()=>selectDay(state.selectedDay+1));
+document.getElementById('nextIncomplete').addEventListener('click',()=>{
+ let next=PLAN.find(p=>p.day>state.selectedDay&&dayDone(p)<p.mh.length+p.pol.length);
+ selectDay(next?next.day:Math.min(46,state.selectedDay+1));
+});
+document.getElementById('exportBtn').addEventListener('click',()=>{
+ const blob=new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString(),...state},null,2)],{type:'application/json'});
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='upsc-daily-backlog-backup.json';a.click();URL.revokeObjectURL(a.href);
+});
+document.getElementById('importBtn').addEventListener('click',()=>document.getElementById('importFile').click());
+document.getElementById('importFile').addEventListener('change',async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{const x=JSON.parse(await f.text());if(!x.mh||!x.pol)throw Error('Invalid backup');
+ state.mh=x.mh;state.pol=x.pol;state.selectedDay=Math.min(46,Math.max(1,Number(x.selectedDay)||1));save();render();alert('Backup restored.');}
+ catch(err){alert('Could not import this backup file.');}e.target.value='';
+});
+document.getElementById('resetBtn').addEventListener('click',()=>{
+ if(confirm('Reset all lecture progress? Export a backup first if you want to keep it.')){state={mh:{},pol:{},selectedDay:1};save();render();}
+});
+load();renderDayOptions();render();
+if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+function net(){document.getElementById('network').textContent=navigator.onLine?'● Offline-ready':'● Offline mode';}
+window.addEventListener('online',net);window.addEventListener('offline',net);net();
+</script>
+</body></html>
